@@ -1,0 +1,123 @@
+# SI507 Final Project Proposal
+
+## 1. Project Overview
+### a. Project Outcome
+Front end: Users can generate and battle pokemon hybrids.  
+Back end: Pulls "parent" pokemon data from a PokeAPI constructed database to generate hybrid. 
+"Parent" pokemon data is averaged to create hybrid pokemon's data. 
+When hybrid pokemon "battle", a winner is predicted based on each pokemon's types, stats, moves, and abilities. 
+### b. Project Outline
+#### 1. Collect Data
+  - Use PokeAPI to collect data on all current pokemon names, descriptions, types, stats, abilities, moves, and habitats. 
+  - Utilize webscraping of Bulbapedia to fill in missing data (such as type matchups).
+  - Implement caching for responsible aquisition. 
+#### 2. Create Pokemon Datasets
+  - Construct various datasets consisting of "parent" pokemon, moves, abilities, and habitats.
+#### 3. Statistical Computations
+  - Determine type, move, and ability probabilities. 
+#### 4. Generate Hybrids
+  - Develop hybrid generating function that:
+    - takes two pokemon, averages relavent data
+    - predicts type, moves, abilities, and habitats based on parent probabilities 
+    - produces a "child" hybrid pokemon with attributes from both "parent" pokemon.
+    - Caches user generated hybrid pokemon for user to access at a later time.
+#### 5. Battle Pokemon
+  - Determine pokemon for battle
+    - If pokemon exist in the database or cache 
+      - pull pokemon data
+    - otherwise 
+      - generate hybrid
+  - Predict winner based on stats, types, moves, and abilities 
+#### 6. Create User Interfaces
+  - Create user interface that enables hybrid pokemon generation.
+  - Create user interface that enables battling two previously created hybrid pokemon, or a hybrid pokemon against an existing "parent" pokemon.
+#### 7. Create front end presentation.
+  - Using Jupyter Notebook or Flask? 
+### c. Project Inspiration
+Inspiration for this project comes from [Pokemon Fusion](https://pokemon.alexonsager.net/), a website that enables users to select two Generation I pokemon or randomly "fuses" two Generation I pokemon together.
+I wanted to build on this idea by incorporating pokemon from all generations and add functionality to enable users to "battle" their generated pokemon.
+## 2. Data Sources
+### a. PokeAPI 
+**Challenge Score: 3**
+From [PokeAPI Documentation](https://pokeapi.co/docs/v2#info "Documentation")
+#### 1. Information
+> This is a consumption-only API — only the HTTP GET method is available on resources.
+> 
+> No authentication is required to access this API, and all resources are fully open and available. Since the move to static hosting in November 2018, rate limiting has been removed entirely, but we still encourage you to limit the frequency of requests to limit our hosting costs.
+#### 2. Fair Use Policy
+> PokéAPI is free and open to use. It is also very popular. Because of this, we ask every developer to abide by our fair use policy. People not complying with the fair use policy will have their IP address permanently banned.
+> 
+> PokéAPI is primarily an educational tool, and we will not tolerate denial of service attacks preventing people from learning.
+> 
+> Rules:
+> 
+> - Locally cache resources whenever you request them.
+> - Be nice and friendly to your fellow PokéAPI developers.
+#### 3. Resource Lists/Pagination
+> Calling any API endpoint without a resource ID or name will return a paginated list of available resources for that API. By default, a list "page" will contain up to 20 resources. If you would like to change this just add a 'limit' query parameter to the GET request, e.g. ?=60. You can use 'offset' to move to the next page, e.g. ?limit=60&offset=60.
+>
+> Named (endpoint)
+>
+> `GET https://pokeapi.co/api/v2/{endpoint}/`
+### b. Bulbapedia
+**Challenge Score: 4**
+From Bulbapedia [Main Page](https://bulbapedia.bulbagarden.net/wiki/Main_Page "Main Page") and [Type Page](https://bulbapedia.bulbagarden.net/wiki/Type "Type")
+#### 1. Overview
+> Bulbapedia is an encyclopedia about Pokémon to which anyone can contribute. Since its launch in February 2005, it has grown to become one of the largest Pokémon resources on the internet. As part of Bulbagarden, this ever-growing wiki is supported by Bulbanews, Bulbagarden Archives, and the Bulbagarden forums. You're welcome to browse for a while, if you wish, or make an account to start editing pages.
+>
+> We have 44,077 articles on a range of Pokémon-related topics.
+>
+> If you have any questions, first see the FAQ page. If this doesn't help, find an active staff member. They'll point you in the right direction.
+#### 2. Aquisition
+As of right now, PokeAPI is comprehensive enough that, on the surface, there is no data that needs to be scraped.
+I elected to utilize scraping singular Bulbapedia pages if necessary to fill in static data rather than crawling and scraping pages to collect pokemon specific data because of the complex and inconsistent html used across pages.
+# 3. Acessing Data Sources
+### a. PokeAPI
+Attempts to access PokeAPI have been successful.
+
+`import requests`
+
+`import json`
+
+`endpoint = "https://pokeapi.co/api/v2/pokemon/"`
+
+`pikachu_response = requests.get(endpoint + "pikachu").json()`
+
+`print(pikachu_response['name'])`
+
+## b. Bulbapedia
+Attempts to scrape Bulbapedia have been successful.
+
+`from bs4 import BeautifulSoup as bs`
+
+`pikachu_html = requests.get("https://bulbapedia.bulbagarden.net/wiki/Pikachu_(Pok%C3%A9mon)").text`
+
+`pikachu_soup = bs(pikachu_html, 'html.parser')`
+
+`# print(pikachu_soup.prettify)`
+
+`name = pikachu_soup.find('h1', class_="firstHeading").text`
+
+`print(name)`
+
+# 4. Data Processing and Presentation Options
+### a. Datasets
+- Data sets will be compiled by parsing json objects from PokeAPI responses.
+- Pandas will be used to maintain data tables, manipulate data, and statistical computations
+### b. Computations
+- Type specific stat distributions with confidence intervals for each type to determine boundaries of various stats for each type
+- Probabilities of types, moves, abilities, and habitats
+- Preprocessing of Pokemon stats for type and habitat predictions
+- Other computations may be necessary to achieve the project goals
+### c. Visualizations 
+- Pokemon type distribution
+- Pokemon habitat distribution 
+- Cluster scatterplot
+### d. Platform
+- Command Line?
+  - not ideal for plotting visualizations
+- Jupyter Notebook?
+  - easier for plotting visualizations
+  - user has to interact more than just entering input
+- Flask? 
+  - unfamilliar with the package and implementation, other than what was reviewed in class
